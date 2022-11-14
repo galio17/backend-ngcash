@@ -1,0 +1,26 @@
+{
+  "name": "backend-ngcash",
+  "version": "1.0.0",
+  "description": "",
+  "type": "module",
+  "main": "index.js",
+  "scripts": {
+    "test": "jest"
+  },
+  "keywords": [],
+  "author": "Giuseppe Dias <giuseppe.dias17@gmail.com>",
+  "license": "ISC",
+  "dependencies": {
+    "@prisma/client": "^4.6.1",
+    "express": "^4.18.2",
+    "prisma": "^4.6.1"
+  },
+  "devDependencies": {
+    "@types/node": "^18.11.9",
+    "dotenv": "^16.0.3",
+    "jest": "^29.3.1",
+    "supertest": "^6.3.1",
+    "ts-node": "^10.9.1",
+    "typescript": "^4.8.4"
+  }
+}
