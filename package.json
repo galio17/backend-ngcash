@@ -5,7 +5,10 @@
   "type": "module",
   "main": "index.js",
   "scripts": {
-    "test": "jest"
+    "test": "jest",
+    "migrate": "yarn prisma migrate",
+    "migrate:dev": "yarn prisma migrate dev",
+    "migrate:deploy": "yarn prisma migrate deploy"
   },
   "keywords": [],
   "author": "Giuseppe Dias <giuseppe.dias17@gmail.com>",
