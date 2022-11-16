@@ -11,8 +11,8 @@ datasource db {
 }
 
 model accounts {
-  id      String  @id @default(uuid())
-  balance Decimal
+  id      String @id @default(uuid())
+  balance Float
 
   user               users?
   creditTransactions transactions[] @relation("credit")
@@ -20,12 +20,12 @@ model accounts {
 }
 
 model users {
-  id         String @id @default(uuid())
-  accountsId String @unique
-  username   String
-  password   String
+  id        String @id @default(uuid())
+  accountId String @unique
+  username  String @unique
+  password  String
 
-  account accounts @relation(fields: [accountsId], references: [id])
+  account accounts @relation(fields: [accountId], references: [id])
 }
 
 model transactions {
