@@ -1,4 +1,4 @@
-interface ITransferRequest {
+export interface ITransferRequest {
   to: string;
   value: number;
 }

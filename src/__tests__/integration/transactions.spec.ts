@@ -1,5 +1,6 @@
 import request from "supertest";
 import { server } from "../../app";
+import { ITransferRequest } from "../../interfaces";
 import {
   invalidAuthorizationMock,
   transferMock,
@@ -37,7 +38,7 @@ describe("POST /transactions/transfer", () => {
   });
 
   describe("should not be able to transfer credits", () => {
-    test("without required fields and matches", async () => {
+    test("without required fields ", async () => {
       const response = await request(server).post("/transactions/transfer");
 
       expect(response.status).toBe(400);
@@ -45,6 +46,16 @@ describe("POST /transactions/transfer", () => {
         message: expect.arrayContaining([
           expect.stringMatching(/^(?=.*to(\s|$))(?=.*required?(\s|$)).*$/i),
           expect.stringMatching(/^(?=.*value(\s|$))(?=.*required?(\s|$)).*$/i),
+        ]),
+      });
+    });
+
+    test("without fields matches", async () => {
+      const response = await request(server).post("/transactions/transfer");
+
+      expect(response.status).toBe(400);
+      expect(response.body).toEqual({
+        message: expect.arrayContaining([
           expect.stringMatching(
             /^(?=.*value(\s|$))(?=.*min(imum)?(\s|$))(?=.*(0[.,]01|1\scents?)(\s|$)).*$/i
           ),

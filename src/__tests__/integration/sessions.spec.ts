@@ -1,5 +1,6 @@
 import request from "supertest";
 import { server } from "../../app";
+import { IUserRequest } from "../../interfaces";
 import { invalidAuthorizationMock, userMock } from "../mocks";
 
 let authorization = "Bearer ";
@@ -20,7 +21,7 @@ describe("POST /login", () => {
   });
 
   describe("should not be able to login", () => {
-    test("without required fields and matches", async () => {
+    test("without required fields", async () => {
       const response = await request(server).post("/login");
 
       expect(response.status).toBe(400);
@@ -37,12 +38,12 @@ describe("POST /login", () => {
     });
 
     test("with wrong password", async () => {
-      const wrongUser: IUserRequest = {
+      const invalidUser: IUserRequest = {
         ...userMock,
         password: "wrong",
       };
 
-      const response = await request(server).post("/login").send(wrongUser);
+      const response = await request(server).post("/login").send(invalidUser);
 
       expect(response.status).toBe(401);
       expect(response.body).toEqual({
@@ -53,12 +54,12 @@ describe("POST /login", () => {
     });
 
     test("with wrong/inexistent username", async () => {
-      const wrongUser: IUserRequest = {
+      const invalidUser: IUserRequest = {
         ...userMock,
         username: "wrong",
       };
 
-      const response = await request(server).post("/login").send(wrongUser);
+      const response = await request(server).post("/login").send(invalidUser);
 
       expect(response.status).toBe(401);
       expect(response.body).toEqual({

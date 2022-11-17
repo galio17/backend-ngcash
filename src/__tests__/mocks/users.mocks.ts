@@ -1,3 +1,5 @@
+import { IUserRequest } from "../../interfaces";
+
 export const userMock: IUserRequest = {
   username: "client",
   password: "Test.123",
