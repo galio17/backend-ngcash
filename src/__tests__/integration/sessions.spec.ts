@@ -82,7 +82,6 @@ describe("GET /profile", () => {
       id: expect.any(String),
       username: expect.any(String),
       balance: expect.any(Number),
-      transactions: expect.any(Array),
     });
   });
 
