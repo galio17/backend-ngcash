@@ -1,7 +1,7 @@
 -- CreateTable
 CREATE TABLE "accounts" (
     "id" TEXT NOT NULL,
-    "balance" DECIMAL(65,30) NOT NULL,
+    "balance" DOUBLE PRECISION NOT NULL,
 
     CONSTRAINT "accounts_pkey" PRIMARY KEY ("id")
 );
@@ -9,7 +9,7 @@ CREATE TABLE "accounts" (
 -- CreateTable
 CREATE TABLE "users" (
     "id" TEXT NOT NULL,
-    "accountsId" TEXT NOT NULL,
+    "accountId" TEXT NOT NULL,
     "username" TEXT NOT NULL,
     "password" TEXT NOT NULL,
 
@@ -28,10 +28,13 @@ CREATE TABLE "transactions" (
 );
 
 -- CreateIndex
-CREATE UNIQUE INDEX "users_accountsId_key" ON "users"("accountsId");
+CREATE UNIQUE INDEX "users_accountId_key" ON "users"("accountId");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "users_username_key" ON "users"("username");
 
 -- AddForeignKey
-ALTER TABLE "users" ADD CONSTRAINT "users_accountsId_fkey" FOREIGN KEY ("accountsId") REFERENCES "accounts"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "users" ADD CONSTRAINT "users_accountId_fkey" FOREIGN KEY ("accountId") REFERENCES "accounts"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "transactions" ADD CONSTRAINT "transactions_debitedAccountId_fkey" FOREIGN KEY ("debitedAccountId") REFERENCES "accounts"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
