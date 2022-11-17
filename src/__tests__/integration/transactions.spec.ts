@@ -27,19 +27,21 @@ describe("POST /transactions/transfer", () => {
       .send(transferMock)
       .set("Authorization", authorization);
 
-    expect(response.status).toBe(200);
+    expect(response.status).toBe(201);
     expect(response.body).toEqual({
       id: expect.any(String),
       from: userMock.username,
       to: userToTransferMock.username,
       value: expect.any(Number),
-      releaseDate: expect.any(Date),
+      releaseDate: expect.any(String),
     });
   });
 
   describe("should not be able to transfer credits", () => {
     test("without required fields ", async () => {
-      const response = await request(server).post("/transactions/transfer");
+      const response = await request(server)
+        .post("/transactions/transfer")
+        .set("Authorization", authorization);
 
       expect(response.status).toBe(400);
       expect(response.body).toEqual({
@@ -51,13 +53,21 @@ describe("POST /transactions/transfer", () => {
     });
 
     test("without fields matches", async () => {
-      const response = await request(server).post("/transactions/transfer");
+      const invalidTransfer: ITransferRequest = {
+        to: "user",
+        value: 0.00003,
+      };
+
+      const response = await request(server)
+        .post("/transactions/transfer")
+        .send(invalidTransfer)
+        .set("Authorization", authorization);
 
       expect(response.status).toBe(400);
       expect(response.body).toEqual({
         message: expect.arrayContaining([
           expect.stringMatching(
-            /^(?=.*value(\s|$))(?=.*min(imum)?(\s|$))(?=.*(0[.,]01|1\scents?)(\s|$)).*$/i
+            /^(?=.*value(\s|$))(?=.*(min(imum)?|greater)(\s|$))(?=.*(0[.,]01|1\scents?)(\s|$)).*$/i
           ),
         ]),
       });
@@ -101,7 +111,7 @@ describe("POST /transactions/transfer", () => {
       expect(response.status).toBe(403);
       expect(response.body).toEqual({
         message: expect.stringMatching(
-          /^(?=transfer(\s|$))(?=balance(\s|$))(?=insufficient(\s|$)).*$/
+          /^(?=.*transfer(\s|$))(?=.*balance(\s|$))(?=.*insufficient(\s|$)).*$/
         ),
       });
     });
@@ -120,7 +130,7 @@ describe("POST /transactions/transfer", () => {
       expect(response.status).toBe(403);
       expect(response.body).toEqual({
         message: expect.stringMatching(
-          /^(?=transfer(\s|$))(?=you(rself)?(\s|$)).*$/
+          /^(?=.*transfer(\s|$))(?=.*you(rself)?(\s|$)).*$/
         ),
       });
     });
