@@ -32,7 +32,7 @@ model transactions {
   id                String   @id @default(uuid())
   debitedAccountId  String
   creditedAccountId String
-  value             String
+  value             Float
   createdAt         DateTime @default(now())
 
   creditedAccount accounts @relation("credit", fields: [debitedAccountId], references: [id])
