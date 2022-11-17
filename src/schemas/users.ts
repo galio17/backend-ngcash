@@ -8,6 +8,6 @@ export const createUserSchema: yup.SchemaOf<IUserRequest> = yup.object().shape({
     .min(8)
     .matches(/[A-Z]/, "password must have capital letter")
     .matches(/\d/, "password must have number")
-    .matches(/[.!@#$%&]/, "password must have number")
+    .matches(/[.!@#$%&]/, "password must have the following symbols: .!@#$%&")
     .required(),
 });

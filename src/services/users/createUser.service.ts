@@ -1,10 +1,12 @@
 import { PrismaClientKnownRequestError } from "@prisma/client/runtime";
+import { hash } from "bcryptjs";
 import AppError from "../../errors";
 import { IUserRequest } from "../../interfaces";
 import { prisma } from "../../prisma";
 
 export const createUserService = async (userReq: IUserRequest) => {
   try {
+    userReq.password = await hash(userReq.password, 10);
     const data = {
       ...userReq,
       account: {
