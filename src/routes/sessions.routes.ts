@@ -1,6 +1,9 @@
 import { Router } from "express";
-import { loginController } from "../controllers/sessions/login.controller";
-import { validateSchemaMiddleware } from "../middlewares";
+import { getProfileController, loginController } from "../controllers/sessions";
+import {
+  validateSchemaMiddleware,
+  verifyTokenMiddleware,
+} from "../middlewares";
 import { loginSchema } from "../schemas/sessions";
 
 const sessionsRouter = Router();
@@ -10,5 +13,7 @@ sessionsRouter.post(
   validateSchemaMiddleware(loginSchema),
   loginController
 );
+
+sessionsRouter.get("/profile", verifyTokenMiddleware, getProfileController);
 
 export default sessionsRouter;
