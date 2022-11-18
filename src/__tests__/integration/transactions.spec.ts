@@ -1,8 +1,10 @@
 import request from "supertest";
 import { server } from "../../app";
 import { ITransferRequest } from "../../interfaces";
+import { prisma } from "../../prisma";
 import {
   invalidAuthorizationMock,
+  reverseTransferMock,
   transferMock,
   userMock,
   userToTransferMock,
@@ -17,7 +19,6 @@ beforeAll(async () => {
   authorization += login.body.token;
 
   await request(server).post("/users").send(userToTransferMock);
-  transferMock.to = userToTransferMock.username;
 });
 
 describe("POST /transactions/transfer", () => {
@@ -32,9 +33,28 @@ describe("POST /transactions/transfer", () => {
       id: expect.any(String),
       from: userMock.username,
       to: userToTransferMock.username,
-      value: expect.any(Number),
+      value: transferMock.value,
       releaseDate: expect.any(String),
     });
+
+    const accounts = await prisma.accounts.findMany({
+      include: { user: true },
+    });
+
+    expect(accounts).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          user: expect.objectContaining({
+            username: userToTransferMock.username,
+          }),
+          balance: 100 + transferMock.value,
+        }),
+        expect.objectContaining({
+          user: expect.objectContaining({ username: userMock.username }),
+          balance: 100 - transferMock.value,
+        }),
+      ])
+    );
   });
 
   describe("should not be able to transfer credits", () => {
@@ -139,19 +159,35 @@ describe("POST /transactions/transfer", () => {
 
 describe("GET /transactions", () => {
   test("should be able to list own transactions", async () => {
+    const toTransferLogin = await request(server)
+      .post("/login")
+      .send(userToTransferMock);
+    const toTransferAuthorization = `Bearer ${toTransferLogin.body.token}`;
+    await request(server)
+      .post("/transactions/transfer")
+      .send(reverseTransferMock)
+      .set("Authorization", toTransferAuthorization);
+
     const response = await request(server)
       .get("/transactions")
       .set("Authorization", authorization);
 
     expect(response.status).toBe(200);
-    expect(response.body).toHaveLength(1);
+    expect(response.body).toHaveLength(2);
     expect(response.body).toEqual([
+      {
+        id: expect.any(String),
+        from: userToTransferMock.username,
+        to: userMock.username,
+        value: reverseTransferMock.value,
+        releaseDate: expect.any(String),
+      },
       {
         id: expect.any(String),
         from: userMock.username,
         to: userToTransferMock.username,
-        value: expect.any(Number),
-        releaseDate: expect.any(Date),
+        value: transferMock.value,
+        releaseDate: expect.any(String),
       },
     ]);
   });
