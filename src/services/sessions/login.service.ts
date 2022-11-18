@@ -21,7 +21,7 @@ export const loginService = async ({ username, password }: IUserRequest) => {
   }
 
   const secret = process.env.SECRET;
-  const token = sign({ username }, secret, {
+  const token = sign({ username, account: user.accountId }, secret, {
     expiresIn: "24h",
     subject: user.id,
   });

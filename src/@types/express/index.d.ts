@@ -1,6 +1,7 @@
 interface IReqUser {
   id: string;
   username: string;
+  account: string;
 }
 
 declare global {
