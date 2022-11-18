@@ -35,11 +35,11 @@ export const transferService = async (
   });
   const updateCreditedUser = prisma.accounts.update({
     where: { id: debitedUser!.id },
-    data: { balance: debitedUser!.balance + value },
+    data: { balance: debitedUser!.balance - value },
   });
   const updateDebitedUser = prisma.accounts.update({
     where: { id: creditedUser.id },
-    data: { balance: creditedUser.balance - value },
+    data: { balance: creditedUser.balance + value },
   });
 
   const [transaction] = await prisma.$transaction([
