@@ -8,10 +8,10 @@ export const listTransactionsService = async (account: string) => {
     orderBy: { createdAt: "desc" },
     include: {
       creditedAccount: {
-        select: { user: { select: { username: true } } },
+        select: { user: true },
       },
       debitedAccount: {
-        select: { user: { select: { username: true } } },
+        select: { user: true },
       },
     },
   });

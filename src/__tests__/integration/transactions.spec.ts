@@ -11,6 +11,7 @@ import {
 } from "../mocks";
 
 let authorization = "Bearer ";
+let transactionId: string;
 
 beforeAll(async () => {
   await request(server).post("/users").send(userMock);
@@ -27,6 +28,7 @@ describe("POST /transactions/transfer", () => {
       .post("/transactions/transfer")
       .send(transferMock)
       .set("Authorization", authorization);
+    transactionId = response.body.id;
 
     expect(response.status).toBe(201);
     expect(response.body).toEqual({
@@ -213,6 +215,64 @@ describe("GET /transactions", () => {
       expect(response.body).toEqual({
         message: expect.stringMatching(
           /^(?=.*expired?(\s|$))(?=.*invalid(\s|$))(?=.*token(\s|$)).*$/
+        ),
+      });
+    });
+  });
+});
+
+describe("GET /transactions/:id", () => {
+  test("should be able to get own transaction", async () => {
+    const response = await request(server)
+      .get(`/transactions/${transactionId}`)
+      .set("Authorization", authorization);
+
+    expect(response.status).toBe(200);
+    expect(response.body).toEqual({
+      id: transactionId,
+      from: userMock.username,
+      to: userToTransferMock.username,
+      value: transferMock.value,
+      releaseDate: expect.any(String),
+    });
+  });
+
+  describe("should not be able to get own transaction", () => {
+    test("without authentication", async () => {
+      const response = await request(server).get(
+        `/transactions/${transactionId}`
+      );
+
+      expect(response.status).toBe(401);
+      expect(response.body).toEqual({
+        message: expect.stringMatching(
+          /^(?=.*miss(ing)?(\s|$))(?=.*authorization(\s|$)).*$/i
+        ),
+      });
+    });
+
+    test("with invalid/expired authentication", async () => {
+      const response = await request(server)
+        .get(`/transactions/${transactionId}`)
+        .set("Authorization", invalidAuthorizationMock);
+
+      expect(response.status).toBe(401);
+      expect(response.body).toEqual({
+        message: expect.stringMatching(
+          /^(?=.*expired?(\s|$))(?=.*invalid(\s|$))(?=.*token(\s|$)).*$/
+        ),
+      });
+    });
+
+    test("with invalid/non-own transactionId", async () => {
+      const response = await request(server)
+        .get(`/transactions/8a7c9748-392f-4bd7-8def-bb45059776f6`)
+        .set("Authorization", authorization);
+
+      expect(response.status).toBe(404);
+      expect(response.body).toEqual({
+        message: expect.stringMatching(
+          /^(?=.*transactions?(\s|$))(?=.*not\sfound(\s|$)).*$/
         ),
       });
     });
