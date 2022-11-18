@@ -1,5 +1,8 @@
 import { Router } from "express";
-import { transferController } from "../controllers/transactions/transfer.controller";
+import {
+  listTransactionsController,
+  transferController,
+} from "../controllers/transactions";
 import {
   validateSchemaMiddleware,
   verifyTokenMiddleware,
@@ -7,6 +10,8 @@ import {
 import { transferSchema } from "../schemas/transactions";
 
 const transactionsRouter = Router();
+
+transactionsRouter.get("", verifyTokenMiddleware, listTransactionsController);
 
 transactionsRouter.post(
   "/transfer",
