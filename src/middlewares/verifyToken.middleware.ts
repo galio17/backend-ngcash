@@ -22,13 +22,14 @@ export const verifyTokenMiddleware: RequestHandler = (req, _res, next) => {
 
   const secret = process.env.SECRET;
   verify(token, secret, undefined!, (err, decoded?: IDecoded) => {
-    if (err) {
+    if (err || !decoded) {
       throw new AppError("invalid or expired token", 401);
     }
 
     req.user = {
-      id: decoded?.sub!,
-      username: decoded?.username!,
+      id: decoded.sub!,
+      username: decoded.username!,
+      account: decoded.account!,
     };
   });
 
