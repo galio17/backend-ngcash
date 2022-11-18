@@ -1,4 +1,5 @@
 import { server } from "./app";
+import "./webSocket";
 
 const port = process.env.PORT || 3000;
 
