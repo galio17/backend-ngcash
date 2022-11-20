@@ -1,0 +1,30 @@
+version: "3.9"
+
+services:
+  db:
+    container_name: db
+    image: postgres:14-alpine
+    ports:
+      - 5431:5432
+    env_file:
+      - .env
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $POSTGRES_USER -d $POSTGRES_DB"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 5s
+
+  api:
+    container_name: api
+    build: .
+    command: sh -c "yarn migrate:dev && yarn dev"
+    ports:
+      - 3000:3000
+    env_file:
+      - .env
+    depends_on:
+      db:
+        condition: service_healthy
+    volumes:
+      - .:/app

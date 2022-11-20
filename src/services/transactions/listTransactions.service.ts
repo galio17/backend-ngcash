@@ -16,15 +16,14 @@ export const listTransactionsService = async (account: string) => {
     },
   });
 
-  const history = transactions.map(
-    ({ id, creditedAccount, debitedAccount, value, createdAt }) => {
-      const from = debitedAccount.user!.username;
-      const to = creditedAccount.user!.username;
-      const releaseDate = createdAt;
+  const history = transactions.map((element) => {
+    const { id, creditedAccount, debitedAccount, value, createdAt } = element;
+    const from = debitedAccount.user!.username;
+    const to = creditedAccount.user!.username;
+    const releaseDate = createdAt;
 
-      return { id, from, to, value, releaseDate };
-    }
-  );
+    return { id, from, to, value, releaseDate };
+  });
 
   return history;
 };
