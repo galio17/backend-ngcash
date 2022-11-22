@@ -10,7 +10,12 @@ import router from "./routes";
 
 const app = express();
 export const server = http.createServer(app);
-export const io = new Server(server, { cors: { origin: "*" } });
+export const io = new Server(server, {
+  cors: {
+    origin: "*",
+    methods: ["GET", "POST"],
+  },
+});
 
 app.use(cors());
 app.use(express.json());
